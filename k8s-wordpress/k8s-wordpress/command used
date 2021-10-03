@@ -1,0 +1,79 @@
+kubectl get nodes 
+kubectl describe nodes
+cat wordpress.deployment.mysql.yaml | 
+
+tail -n20
+cat wordpress.deployment.web.yaml | tail 
+
+-n20
+EKS_CLUSTER_NAME=$(aws eks list-clusters 
+
+--region us-west-2 --query clusters[0] 
+
+--output text)
+echo $EKS_CLUSTER_NAME
+EKS_WORKER_NODE_NAME=$(aws ec2 describe-
+
+instances --region us-west-2 --query 
+
+"Reservations[].Instances[].Tags[?
+
+Key=='Name' && contains
+
+(Value,'$EKS_CLUSTER_NAME')][].Value" | 
+
+tr -d \"\ \[\]\\n)
+echo $EKS_WORKER_NODE_NAME
+EKS_WORKER_NODE_AZ=$(aws ec2 describe-
+
+instances --region us-west-2 --filters 
+
+"Name=tag:Name,Values=
+
+$EKS_WORKER_NODE_NAME" "Name=instance-
+
+state-name,Values=running" --query 
+
+Reservations[0].Instances
+
+[0].Placement.AvailabilityZone --output 
+
+text)
+echo $EKS_WORKER_NODE_AZ  
+
+cat wordpress.deployment.mysql.yaml | 
+
+tail -n20
+kubectl create secret generic mysql-pass 
+
+--from-literal=password
+
+kubectl get secrets
+kubectl create -f 
+
+wordpress.deployment.mysql.yaml
+
+kubectl describe pods $POD_NAME_MYSQL
+
+kubectl logs $POD_NAME_MYSQL
+kubectl get pods --watch
+kubectl describe pods $POD_NAME_WEB
+kubectl get services -o wide
+kubectl get services -l app=wordpress -o 
+
+json
+curl -I $ELB_DNS_NAME
+kubectl delete secret mysql-pass
+kubectl get deployments
+kubectl get pods
+kubectl get services
+kubectl get secrets 
+
+
+
+
+kubectl delete secret mysql-pass
+
+
+
+
